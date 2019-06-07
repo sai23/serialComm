@@ -40,21 +40,13 @@ public class PortChat
         // Create a new SerialPort object with default settings.  
         _serialPort = new SerialPort();
 
-        // Allow the user to set the appropriate properties.  
-        //_serialPort.PortName = SetPortName(portName);
-        //_serialPort.BaudRate = SetPortBaudRate(baudRate);
-        //_serialPort.Parity = SetPortParity(parity);
-        //_serialPort.DataBits = SetPortDataBits(dataBits);
-        //_serialPort.StopBits = SetPortStopBits(stopBits);
-        //_serialPort.Handshake = SetPortHandshake(handshake);
-        // Allow the user to set the appropriate properties.  
-        _serialPort.PortName = SetPortName(_serialPort.PortName);
-        _serialPort.BaudRate = SetPortBaudRate(_serialPort.BaudRate);
-        _serialPort.Parity = SetPortParity(_serialPort.Parity);
-        _serialPort.DataBits = SetPortDataBits(_serialPort.DataBits);
-        _serialPort.StopBits = SetPortStopBits(_serialPort.StopBits);
-        _serialPort.Handshake = SetPortHandshake(_serialPort.Handshake);
-
+        //Allow the user to set the appropriate properties.  
+        _serialPort.PortName = SetPortName(portName);
+        _serialPort.BaudRate = SetPortBaudRate(baudRate);
+        _serialPort.Parity = SetPortParity(parity);
+        _serialPort.DataBits = SetPortDataBits(dataBits);
+        _serialPort.StopBits = SetPortStopBits(stopBits);
+        _serialPort.Handshake = SetPortHandshake(handshake);
 
         // Set the read/write timeouts  
         _serialPort.ReadTimeout = 500;

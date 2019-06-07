@@ -5,3 +5,10 @@ C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.c
 C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.csproj.CoreCompileInputs.cache
 C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.exe
 C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.pdb
+C:\serialComm\bin\Debug\PortComm.exe.config
+C:\serialComm\bin\Debug\PortComm.exe
+C:\serialComm\bin\Debug\PortComm.pdb
+C:\serialComm\obj\Debug\PortComm.csprojAssemblyReference.cache
+C:\serialComm\obj\Debug\PortComm.csproj.CoreCompileInputs.cache
+C:\serialComm\obj\Debug\PortComm.exe
+C:\serialComm\obj\Debug\PortComm.pdb
