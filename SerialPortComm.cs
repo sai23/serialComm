@@ -17,7 +17,7 @@ public class PortChat
     public static SerialPort serialPort { get; set; }
     public static Handshake handshake { get; set; }
 
-    public PortChat()
+    public static void PortChatParameters()
     {
         XmlDocument xmlDoc = new XmlDocument();
         xmlDoc.Load(Path.Combine(Environment.CurrentDirectory, "Config.xml"));
@@ -36,6 +36,7 @@ public class PortChat
 
     public static void Main()
     {
+        PortChatParameters();
         string name;
         string message;
         StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;

@@ -1,5 +1,5 @@
-﻿<Parent  >
-  <PortName>COM3</PortName>
+﻿<Parent>
+  <PortName>COM4</PortName>
   <BaudRate>9600</BaudRate>
   <Parity>None</Parity>
   <Databits>8</Databits>
