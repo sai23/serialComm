@@ -2,28 +2,22 @@ using System;
 using System.IO;
 using System.IO.Ports;
 using System.Net;
-using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Xml;
 
-public class SerialPortComm : ServiceBase
+public class PortChat
 {
     public static string portName { get; set; }
+    public static string applicationPath{ get; set; }
     public static int baudRate { get; set; }
     public static Parity parity { get; set; }
     public static int dataBits { get; set; }
     public static StopBits stopBits { get; set; }
     public static SerialPort serialPort { get; set; }
     public static Handshake handshake { get; set; }
-    public static string windowSvcName { get; set; }
-    public static string fileLocation { get; set; }
-    public static string applicationUrl { get; set; }
 
-    static bool _continue;
-    static SerialPort _serialPort;
-    
-    public static void LoadConfigurations()
+    public PortChat()
     {
         XmlDocument xmlDoc = new XmlDocument();
         xmlDoc.Load(Path.Combine(Environment.CurrentDirectory, "Config.xml"));
@@ -33,60 +27,16 @@ public class SerialPortComm : ServiceBase
         parity = (Parity)Enum.Parse(typeof(Parity), myNodes["Parity"].InnerText, true);
         dataBits = Convert.ToInt16(myNodes["Databits"].InnerText);
         stopBits = (StopBits)Enum.Parse(typeof(StopBits), myNodes["StopBits"].InnerText, true);
-        handshake  = (Handshake)Enum.Parse(typeof(Handshake), myNodes["Handshake"].InnerText, true);
-        windowSvcName = myNodes["WindowsServiceName"].InnerText;
-        fileLocation = myNodes["LoggerFile"].InnerText;
-        applicationUrl = myNodes["ApplicationURL"].InnerText;
-
-    }
-
-    static void Main(string[] args)
-    {
-        LoadConfigurations();
+        applicationPath = myNodes["ApplicationURL"].InnerText;
         
-        if (!Environment.UserInteractive)
-            // running as service
-            using (var service = new SerialPortComm())
-                ServiceBase.Run(service);
-        else
-        {
-            // running as console app
-            Start(args);
-
-            Console.WriteLine("Press any key to stop...");
-            Console.ReadKey(true);
-
-            Stop();
-        }
     }
 
-    protected override void OnStart(string[] args)
-    {
-        SerialPortComm.Start(args);
-    }
+    static bool _continue;
+    static SerialPort _serialPort;
 
-    protected override void OnStop()
+    public static void Main()
     {
-        SerialPortComm.Stop();
-    }
-
-    private static void Start(string[] args)
-    {
-       
-        string Path = fileLocation + "\\" + DateTime.Now.ToString("dd_MM_yyyy") + "_Logger.log";
-        FileStream fileStream = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-        using (StreamWriter sw = new StreamWriter(fileStream))
-        {
-            sw.WriteLine("StartLog: Log File Used: " + Path + "|" + DateTime.Now);
-
-            sw.WriteLine("Loaded Configurations: ");
-            sw.WriteLine("-portName: " + portName);
-            sw.WriteLine("-baudRate: " + baudRate);
-            sw.WriteLine("-parity: " + parity);
-            sw.WriteLine("-dataBits: " + dataBits);
-            sw.WriteLine("-stopBits: " + stopBits);
-            sw.WriteLine("-handshake: " + handshake);
-        }
+        string name;
         string message;
         StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;
         Thread readThread = new Thread(Read);
@@ -96,26 +46,24 @@ public class SerialPortComm : ServiceBase
         
         // Allow the user to set the appropriate properties.  
         _serialPort.PortName = portName;
-        _serialPort.BaudRate = baudRate;
+        _serialPort.BaudRate =baudRate;
         _serialPort.Parity = parity;
         _serialPort.DataBits = dataBits;
         _serialPort.StopBits = stopBits;
         _serialPort.Handshake = handshake;
-
+        
         // Set the read/write timeouts  
         _serialPort.ReadTimeout = 500;
         _serialPort.WriteTimeout = 500;
-        //sw.WriteLine("Opening Serial Port : PortName:"+ portName);
-        _serialPort.Open();
-        // sw.WriteLine("Opened Serial Port : PortName:" + portName);
-        _continue = true;
 
-        //sw.WriteLine("Reading the thread for logging the responsefor PortName:" + portName);
+        _serialPort.Open();
+        _continue = true;
         readThread.Start();
 
+        Console.Write("Name: ");
+        name = Console.ReadLine();
 
-        //sw.WriteLine("System should log the response return from Serial Port which is Configured\n");
-        //sw.WriteLine("Type QUIT to exit..");
+        Console.WriteLine("Type QUIT to exit");
 
         while (_continue)
         {
@@ -125,85 +73,148 @@ public class SerialPortComm : ServiceBase
             {
                 _continue = false;
             }
+            else
+            {
+                _serialPort.WriteLine(
+                    String.Format("<{0}>: {1}", name, message));
+            }
         }
 
         readThread.Join();
         _serialPort.Close();
     }
 
-    private static void Stop()
-    {
-
-        string Path = fileLocation + "\\" + DateTime.Now.ToString("dd_MM_yyyy") + "_Logger.log";
-        FileStream fileStream = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-        using (StreamWriter sr = new StreamWriter(Path))
-        {
-            sr.WriteLine("stopping...............");
-        }
-
-
-        // Create a new SerialPort object with default settings.  
-        _serialPort = new SerialPort();
-
-        // Allow the user to set the appropriate properties.  
-        _serialPort.PortName = portName;
-        _serialPort.BaudRate = baudRate;
-        _serialPort.Parity = parity;
-        _serialPort.DataBits = dataBits;
-        _serialPort.StopBits = stopBits;
-        _serialPort.Handshake = handshake;
-
-        // Set the read/write timeouts  
-        _serialPort.ReadTimeout = 500;
-        _serialPort.WriteTimeout = 500;
-        if (_serialPort.IsOpen)
-        {
-            _serialPort.Close();
-        }
-        using (StreamWriter sr = new StreamWriter(Path))
-        {
-            sr.WriteLine("stopped service successfully");
-        }
-    }
-
-
     public static void Read()
     {
-        string Path = fileLocation + "\\" + DateTime.Now.ToString("dd_MM_yyyy") + "_Logger.log";
-        using (StreamWriter sr = new StreamWriter(Path, true))
-        {
-            sr.WriteLine("Reading the logs");
-        }
-
         while (_continue)
         {
             try
             {
                 string message = _serialPort.ReadLine();
-                if (!string.IsNullOrEmpty(message))
-                {
-                    using (StreamWriter sr = new StreamWriter(Path))
-                    {
-                        sr.WriteLine(message);
-                        string url = applicationUrl + "/Home/Post?parameter="+ message;
-                        string details = CallRestMethod(url);
+                string url = applicationPath + "/Home/Post?parameter=" + message;
+                string details = CallRestMethod(url);
 
-                    }
-                }
             }
-            catch (System.TimeoutException ex)
-            {
-                using (StreamWriter sr = new StreamWriter(Path))
-                {
-                    sr.WriteLine(ex.Message + "\nStack Trace:" + ex.StackTrace.ToString());
-                }
-            }
+            catch (TimeoutException) { }
         }
+    }
+
+    public static string SetPortName(string defaultPortName)
+    {
+        string portName;
+
+        Console.WriteLine("Available Ports:");
+        foreach (string s in SerialPort.GetPortNames())
+        {
+            Console.WriteLine("   {0}", s);
+        }
+
+        Console.Write("COM port({0}): ", defaultPortName);
+        portName = Console.ReadLine();
+
+        if (portName == "")
+        {
+            portName = defaultPortName;
+        }
+        return portName;
+    }
+
+    public static int SetPortBaudRate(int defaultPortBaudRate)
+    {
+        string baudRate;
+
+        Console.Write("Baud Rate({0}): ", defaultPortBaudRate);
+        baudRate = Console.ReadLine();
+
+        if (baudRate == "")
+        {
+            baudRate = defaultPortBaudRate.ToString();
+        }
+
+        return int.Parse(baudRate);
+    }
+
+    public static Parity SetPortParity(Parity defaultPortParity)
+    {
+        string parity;
+
+        Console.WriteLine("Available Parity options:");
+        foreach (string s in Enum.GetNames(typeof(Parity)))
+        {
+            Console.WriteLine("   {0}", s);
+        }
+
+        Console.Write("Parity({0}):", defaultPortParity.ToString());
+        parity = Console.ReadLine();
+
+        if (parity == "")
+        {
+            parity = defaultPortParity.ToString();
+        }
+
+        return (Parity)Enum.Parse(typeof(Parity), parity);
+    }
+
+    public static int SetPortDataBits(int defaultPortDataBits)
+    {
+        string dataBits;
+
+        Console.Write("Data Bits({0}): ", defaultPortDataBits);
+        dataBits = Console.ReadLine();
+
+        if (dataBits == "")
+        {
+            dataBits = defaultPortDataBits.ToString();
+        }
+
+        return int.Parse(dataBits);
+    }
+
+    public static StopBits SetPortStopBits(StopBits defaultPortStopBits)
+    {
+        string stopBits;
+
+        Console.WriteLine("Available Stop Bits options:");
+        foreach (string s in Enum.GetNames(typeof(StopBits)))
+        {
+            Console.WriteLine("   {0}", s);
+        }
+
+        Console.Write("Stop Bits({0}):", defaultPortStopBits.ToString());
+        stopBits = Console.ReadLine();
+
+        if (stopBits == "")
+        {
+            stopBits = defaultPortStopBits.ToString();
+        }
+
+        return (StopBits)Enum.Parse(typeof(StopBits), stopBits);
+    }
+
+    public static Handshake SetPortHandshake(Handshake defaultPortHandshake)
+    {
+        string handshake;
+
+        Console.WriteLine("Available Handshake options:");
+        foreach (string s in Enum.GetNames(typeof(Handshake)))
+        {
+            Console.WriteLine("   {0}", s);
+        }
+
+        Console.Write("Handshake({0}):", defaultPortHandshake.ToString());
+        handshake = Console.ReadLine();
+
+        if (handshake == "")
+        {
+            handshake = defaultPortHandshake.ToString();
+        }
+
+        return (Handshake)Enum.Parse(typeof(Handshake), handshake);
     }
 
     public static string CallRestMethod(string url)
     {
-        
+
         HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create(url);
         webrequest.Method = "POST";
         webrequest.ContentType = "text/xml;charset=UTF-8";
@@ -229,5 +240,4 @@ public class SerialPortComm : ServiceBase
         webresponse.Close();
         return result;
     }
-
 }
