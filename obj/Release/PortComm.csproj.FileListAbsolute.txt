@@ -1,7 +1,6 @@
 C:\serialComm\bin\Release\PortComm.exe.config
 C:\serialComm\bin\Release\PortComm.exe
 C:\serialComm\bin\Release\PortComm.pdb
-C:\serialComm\obj\Release\PortComm.csprojAssemblyReference.cache
 C:\serialComm\obj\Release\PortComm.csproj.CoreCompileInputs.cache
 C:\serialComm\obj\Release\PortComm.exe
 C:\serialComm\obj\Release\PortComm.pdb
