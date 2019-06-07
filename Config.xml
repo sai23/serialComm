@@ -1,0 +1,8 @@
+﻿<Parent  >
+  <PortName>COM3</PortName>
+  <BaudRate>9600</BaudRate>
+  <Parity>None</Parity>
+  <Databits>8</Databits>
+  <StopBits>One</StopBits>
+  <Handshake>None</Handshake>
+</Parent>

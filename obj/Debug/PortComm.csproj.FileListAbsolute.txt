@@ -1,0 +1,7 @@
+C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\bin\Debug\PortComm.exe.config
+C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\bin\Debug\PortComm.exe
+C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\bin\Debug\PortComm.pdb
+C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.csprojAssemblyReference.cache
+C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.csproj.CoreCompileInputs.cache
+C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.exe
+C:\Users\saikumar.tammisetty\Source\Repos\PortComm\PortComm\obj\Debug\PortComm.pdb
