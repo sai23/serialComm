@@ -4,3 +4,4 @@ C:\serialComm\bin\Release\PortComm.pdb
 C:\serialComm\obj\Release\PortComm.csproj.CoreCompileInputs.cache
 C:\serialComm\obj\Release\PortComm.exe
 C:\serialComm\obj\Release\PortComm.pdb
+C:\serialComm\bin\Release\Config.xml
